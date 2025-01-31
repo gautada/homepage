@@ -42,7 +42,6 @@ COPY entrypoint /etc/container/entrypoint
 
 RUN /sbin/apk add --no-cache pnpm
 
-<<<<<<< HEAD
 WORKDIR /
 RUN git clone https://github.com/gethomepage/homepage.git app
 WORKDIR /app
@@ -66,16 +65,12 @@ RUN mv config config~ \
  && ln -fsv /mnt/volumes/configmaps/widgets.yaml /etc/container/configmaps/widgets.yaml \
  && ln -fsv /mnt/volumes/configmaps/custom.css /etc/container/configmaps/custom.css \
  && ln -fsv /mnt/volumes/configmaps/custom.js /etc/container/configmaps/custom.js
-RUN mkdir -p /app/public/images \
- && cp images/6.png /app/public/images/6.png
+
+# RUN mkdir -p /app/public/images \
+#  && cp images/6.png /app/public/images/6.png
+COPY images /app/public/images
+
 RUN chown -R $USER:$USER /app
-=======
-WORKDIR /home/$USER
-RUN git clone https://github.com/gethomepage/homepage.git server
-WORKDIR /home/$USER/server
-RUN pnpm install
-RUN pnpm build
->>>>>>> refs/remotes/origin/dev
 
 # ╭―
 # │ CONFIGURATION
@@ -89,11 +84,9 @@ VOLUME /mnt/volumes/container
 VOLUME /mnt/volumes/secrets
 VOLUME /mnt/volumes/source
 
-<<<<<<< HEAD
+
 WORKDIR /app
-=======
-WORKDIR /home/$USER/server
->>>>>>> refs/remotes/origin/dev
+
 
 
  
