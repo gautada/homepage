@@ -14,3 +14,11 @@ jobs:
 
       - name: Confirm Actions are Running
         run: echo "GitHub Actions is running successfully on the dev branch!"
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v5
+        env:
+          VALIDATE_DOCKERFILE: true
+          # DEFAULT_BRANCH: dev
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # DOCKERFILE_FILE_NAME: Containerfile
