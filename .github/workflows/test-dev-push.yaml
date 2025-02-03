@@ -34,3 +34,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y podman
+
+      - name: Build Container Image for aarch64 using Podman
+        run: |
+          podman build --arch aarch64 --no-cache --tag homepage:build --file Containerfile .
+          podman tag homepage:build docker.io/gautada/homepage:latest
+          podman tag homepage:build docker.io/gautada/homepage:0.10.1
+          which podman
+          pwd
+
+
