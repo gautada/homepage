@@ -1,0 +1,16 @@
+name: Test GitHub Actions - Validate on dev checkin
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  check-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Confirm Actions are Running
+        run: echo "GitHub Actions is running successfully on the dev branch!"
