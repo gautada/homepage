@@ -24,12 +24,12 @@ jobs:
           # DOCKERFILE_FILE_NAME: Containerfile
 
       - name: Set up QEMU for aarch64 (if using emulation)
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y qemu qemu-user-static
-            sudo update-binfmts --enable qemu-aarch64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu qemu-user-static
+          sudo update-binfmts --enable qemu-aarch64
           
       - name: Install Podman
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
