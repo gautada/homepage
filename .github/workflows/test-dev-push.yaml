@@ -12,8 +12,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Confirm Actions are Running
-        run: echo "GitHub Actions is running successfully on the dev branch!"
+      # - name: Confirm Actions are Running
+      #   run: echo "GitHub Actions is running successfully on the dev branch!"
 
       - name: Run Super-Linter
         uses: super-linter/super-linter@v5
@@ -22,3 +22,14 @@ jobs:
           # DEFAULT_BRANCH: dev
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # DOCKERFILE_FILE_NAME: Containerfile
+
+      - name: Set up QEMU for aarch64 (if using emulation)
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y qemu qemu-user-static
+            sudo update-binfmts --enable qemu-aarch64
+          
+      - name: Install Podman
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y podman
