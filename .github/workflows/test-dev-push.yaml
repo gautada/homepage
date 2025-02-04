@@ -1,4 +1,4 @@
-name: Test GitHub Actions - Validate on dev checkin
+name: Github Action - `dev` branch container build and integrate to `docker.io` repository 
 
 on:
   push:
@@ -6,14 +6,11 @@ on:
       - dev
 
 jobs:
-  check-repo:
+  dev-container-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      # - name: Confirm Actions are Running
-      #   run: echo "GitHub Actions is running successfully on the dev branch!"
 
       - name: Run Super-Linter
         uses: super-linter/super-linter@v5
@@ -37,10 +34,12 @@ jobs:
 
       - name: Build Container Image for aarch64 using Podman
         run: |
-          podman build --arch aarch64 --no-cache --tag homepage:build --file Containerfile .
-          podman tag homepage:build docker.io/gautada/homepage:latest
-          podman tag homepage:build docker.io/gautada/homepage:0.10.1
-          which podman
-          pwd
-          ls -l
+          /usr/bin/podman build --arch aarch64 --no-cache --tag homepage:dev --file Containerfile .
+
+
+       - name: Push Container Image to Registry(docker.io)
+        run: |
+          echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login --username "${{ secrets.DOCKERIO_REGISTRY }}" --password-stdin docker.io          
+          /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
+          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
 
