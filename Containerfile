@@ -45,10 +45,11 @@ COPY entrypoint /etc/container/entrypoint
 
 RUN /sbin/apk add --no-cache pnpm
 
-ARG HOMEPAGE_VERSION = "0.10.9"
+ARG HOMEPAGE_VERSION="0.10.9"
 
 WORKDIR /
-RUN git clone --branch v$HOMEPAGE_VERSION https://github.com/gethomepage/homepage.git app
+RUN git config --global advice.detachedHead false
+RUN git clone --branch "v$HOMEPAGE_VERSION" https://github.com/gethomepage/homepage.git app
 WORKDIR /app
 RUN pnpm install
 RUN pnpm build
