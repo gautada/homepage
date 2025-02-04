@@ -44,6 +44,5 @@ jobs:
         run: |
           IMG="docker.io/${{ secrets.DOCKERIO_REGISTRY }}"
           IMG="$IMG/$(/usr/bin/basename $(pwd)):dev"
-
           /usr/bin/podman tag "$(/usr/bin/basename $(pwd)):dev" $IMG 
           /usr/bin/podman push $IMG
