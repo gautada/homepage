@@ -27,14 +27,9 @@ jobs:
           sudo apt-get install --yes qemu-user-static binfmt-support podman
           sudo update-binfmts --enable qemu-aarch64
           
-      - name: Use secrets and login to repository
+      - name: Repository registry login
         run: |
-          # echo "${TOKEN}" | /usr/bin/podman login --username "${REPOSITORY}" --password-stdin docker.io
-          echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login --username "${{ secrets.DOCKERIO_REPOSITORY }}" --password-stdin docker.io
-          # /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REPOSITORY }}/homepage:dev"
-        env:
-          TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-          REPOSITORY: ${{ secrets.DOCKERIO_REPOSITORY }}
+          echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login --username "${{ secrets.DOCKERIO_REGISTRY }}" --password-stdin docker.io
 
       - name: Build Container Image for aarch64 using Podman
         run: |
@@ -43,9 +38,5 @@ jobs:
 
       - name: Push Container Image to Registry(docker.io)
         run: |
-          echo "${TOKEN}" | /usr/bin/podman login --username "${REPOSITORY}" --password-stdin docker.io          
-          /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REPOSITORY }}/homepage:dev"
-          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REPOSITORY }}/homepage:dev"
-        env:
-          TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-          REPOSITORY: ${{ secrets.DOCKERIO_REPOSITORY }}
+          /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
+          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
