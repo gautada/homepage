@@ -1,4 +1,3 @@
----
 name: 'dev' branch container build and integrate to 'docker.io' registry
 
 on:
