@@ -38,5 +38,5 @@ jobs:
 
       - name: Push Container Image to Registry(docker.io)
         run: |
-          /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
-          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
+          /usr/bin/podman tag "$(/usr/bin/basename $(pwd)):dev" "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/$(/usr/bin/basename $(pwd)):dev"
+          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/$(/usr/bin/basename $(pwd)):dev"
