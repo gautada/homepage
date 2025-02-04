@@ -20,25 +20,21 @@ jobs:
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # DOCKERFILE_FILE_NAME: Containerfile
 
-      - name: Set up QEMU for aarch64 (if using emulation)
+      - name: Set up packages 
+        # QEMU for aarch64 (if using emulation)
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-user-static binfmt-support
-          # sudo apt-get install -y qemu-user-binfmt
+          sudo apt-get install --yes qemu-user-static binfmt-support podman
           sudo update-binfmts --enable qemu-aarch64
           
-      - name: Install Podman
+      - name: Use secrets and login to repository
         run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
-
-
-      - name: Push Container Image to Registry(docker.io)
-        run: |
-          echo "${TOKEN}" | /usr/bin/podman login --username "${REGISTRY}" --password-stdin docker.io
+          # echo "${TOKEN}" | /usr/bin/podman login --username "${REPOSITORY}" --password-stdin docker.io
+          echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login --username "${{ secrets.DOCKERIO_REPOSITORY }}" --password-stdin docker.io
+          # /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REPOSITORY }}/homepage:dev"
         env:
           TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-          REGISTRY: ${{ secrets.DOCKERIO_REGISTRY }}
+          REPOSITORY: ${{ secrets.DOCKERIO_REPOSITORY }}
 
       - name: Build Container Image for aarch64 using Podman
         run: |
@@ -47,9 +43,9 @@ jobs:
 
       - name: Push Container Image to Registry(docker.io)
         run: |
-          echo "${TOKEN}" | /usr/bin/podman login --username "${REGISTRY}" --password-stdin docker.io          
-          /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
-          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
+          echo "${TOKEN}" | /usr/bin/podman login --username "${REPOSITORY}" --password-stdin docker.io          
+          /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REPOSITORY }}/homepage:dev"
+          /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REPOSITORY }}/homepage:dev"
         env:
           TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-          REGISTRY: ${{ secrets.DOCKERIO_REGISTRY }}
+          REPOSITORY: ${{ secrets.DOCKERIO_REPOSITORY }}
