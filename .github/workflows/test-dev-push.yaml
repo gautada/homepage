@@ -32,6 +32,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y podman
 
+
+      - name: Push Container Image to Registry(docker.io)
+        run: |
+          echo "${TOKEN}" | /usr/bin/podman login --username "${REGISTRY}" --password-stdin docker.io
+        env:
+          TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+          REGISTRY: ${{ secrets.DOCKERIO_REGISTRY }}
+
       - name: Build Container Image for aarch64 using Podman
         run: |
           /usr/bin/podman build --arch aarch64 --no-cache --tag homepage:dev --file Containerfile .
@@ -39,7 +47,9 @@ jobs:
 
       - name: Push Container Image to Registry(docker.io)
         run: |
-          echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login --username "${{ secrets.DOCKERIO_REGISTRY }}" --password-stdin docker.io          
+          echo "${TOKEN}" | /usr/bin/podman login --username "${REGISTRY}" --password-stdin docker.io          
           /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
           /usr/bin/podman push "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
-
+        env:
+          TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+          REGISTRY: ${{ secrets.DOCKERIO_REGISTRY }}
