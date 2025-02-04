@@ -37,7 +37,7 @@ jobs:
           /usr/bin/podman build --arch aarch64 --no-cache --tag homepage:dev --file Containerfile .
 
 
-       - name: Push Container Image to Registry(docker.io)
+      - name: Push Container Image to Registry(docker.io)
         run: |
           echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login --username "${{ secrets.DOCKERIO_REGISTRY }}" --password-stdin docker.io          
           /usr/bin/podman tag homepage:dev "docker.io/${{ secrets.DOCKERIO_REGISTRY }}/homepage:dev"
