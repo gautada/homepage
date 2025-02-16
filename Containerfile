@@ -75,7 +75,7 @@ RUN mv config config~ \
 
 # RUN mkdir -p /app/public/images \
 #  && cp images/6.png /app/public/images/6.png
-COPY images /app/public/images
+# COPY images /app/public/images
 
 RUN chown -R $USER:$USER /app
 
