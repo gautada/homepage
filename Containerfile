@@ -70,7 +70,8 @@ RUN mv config config~ \
  && ln -fsv /mnt/volumes/configmaps/settings.yaml /etc/container/configmaps/settings.yaml \
  && ln -fsv /mnt/volumes/configmaps/widgets.yaml /etc/container/configmaps/widgets.yaml \
  && ln -fsv /mnt/volumes/configmaps/custom.css /etc/container/configmaps/custom.css \
- && ln -fsv /mnt/volumes/configmaps/custom.js /etc/container/configmaps/custom.js
+ && ln -fsv /mnt/volumes/configmaps/custom.js /etc/container/configmaps/custom.js \
+ && ln -fsv /mnt/volumes/container/images /app/public/images
 
 # RUN mkdir -p /app/public/images \
 #  && cp images/6.png /app/public/images/6.png
