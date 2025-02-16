@@ -40,7 +40,7 @@ jobs:
            --tag homepage:dev --file Containerfile .
 
 
-      - name: Push Container Image to Registry(docker.io)
+      - name: Push Container Image to Registry docker.io
         run: |
           IMG="docker.io/${{ secrets.DOCKERIO_REGISTRY }}"
           IMG="$IMG/$(/usr/bin/basename $(pwd)):dev"
