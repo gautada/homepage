@@ -34,11 +34,9 @@ jobs:
 
       - name: Read .arg file and export variables
         run: |
-            while IFS='=' read -r key value; do
-              # Remove quotes from the value
-              value=$(echo $value | sed 's/^"//;s/"$//')
-              echo "$key=$value" >> $GITHUB_ENV
-            done < .arg
+          while IFS='=' read -r key value; do
+          echo "$key=$value" >> $GITHUB_ENV
+          done < your_file.arg
 
       - name: "Set up packages"
         # QEMU for aarch64 (using emulation)
