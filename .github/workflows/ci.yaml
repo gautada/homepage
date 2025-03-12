@@ -9,12 +9,12 @@ on:
     branches:
       - main
 
-env:
-  IMAGE_NAME: "homepage"
-  IMAGE_VERSION: "0.10.9"
-  ALPINE_VERSION: "3.21.2"
-  IMAGE_TAG_PROD: "latest"
-  IMAGE_TAG_DEV: "dev"
+# env:
+#   IMAGE_NAME: "homepage"
+#   IMAGE_VERSION: "0.10.9"
+#   ALPINE_VERSION: "3.21.2"
+#   IMAGE_TAG_PROD: "latest"
+#   IMAGE_TAG_DEV: "dev"
 
 jobs:
   build-integrate:
@@ -31,6 +31,14 @@ jobs:
           DOCKERFILE_FILE_NAME: Containerfile
           # DEFAULT_BRANCH: dev
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read .arg file and export variables
+        run: |
+            while IFS='=' read -r key value; do
+              # Remove quotes from the value
+              value=$(echo $value | sed 's/^"//;s/"$//')
+              echo "$key=$value" >> $GITHUB_ENV
+            done < .arg
 
       - name: "Set up packages"
         # QEMU for aarch64 (using emulation)

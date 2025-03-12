@@ -15,13 +15,10 @@ LABEL description="A container for a homepage server"
 # │ USER
 # ╰――――――――――――――――――――
 ARG USER=homepage
-RUN /usr/sbin/usermod -l $USER alpine
-RUN /usr/sbin/usermod -d /home/$USER -m $USER
-RUN /usr/sbin/groupmod -n $USER alpine
-# Set shell to /bin/ash and enable pipefail for Alpine-based images
-SHELL ["/bin/ash", "-o", "pipefail", "-c"]
-
-RUN /bin/echo "$USER:$USER" | /usr/sbin/chpasswd
+RUN /usr/sbin/usermod -l $USER alpine \
+ && /usr/sbin/usermod -d /home/$USER -m $USER \
+ && /usr/sbin/groupmod -n $USER alpine \
+ && /bin/echo "$USER:$USER" | /usr/sbin/chpasswd
 
 # ╭―
 # │ PRIVILEGES
@@ -48,12 +45,12 @@ RUN /sbin/apk add --no-cache pnpm
 ARG IMAGE_VERSION="0.10.9"
 
 WORKDIR /
-RUN git config --global advice.detachedHead false
-RUN git clone --branch "v${IMAGE_VERSION}" https://github.com/gethomepage/homepage.git app
+RUN git config --global advice.detachedHead false \
+ && git clone --branch "v${IMAGE_VERSION}" https://github.com/gethomepage/homepage.git app
 WORKDIR /app
-RUN pnpm install
-RUN pnpm build
-RUN mv config config~ \
+RUN pnpm install \
+ && pnpm build \
+ && mv config config~ \
  && mkdir config config/logs /etc/container/configmaps \
  && ln -fsv /etc/container/configmaps/bookmarks.yaml config/bookmarks.yaml \
  && ln -fsv /etc/container/configmaps/docker.yaml config/docker.yaml \
@@ -77,12 +74,12 @@ RUN mv config config~ \
 #  && cp images/6.png /app/public/images/6.png
 # COPY images /app/public/images
 
-RUN chown -R $USER:$USER /app
+# RUN chown -R $USER:$USER /app
 
 # ╭―
 # │ CONFIGURATION
 # ╰――――――――――――――――――――
-RUN chown -R $USER:$USER /home/$USER
+RUN chown -R $USER:$USER /app /home/$USER
 
 USER $USER
 VOLUME /mnt/volumes/backup
@@ -96,5 +93,5 @@ WORKDIR /app
 
 
 
- 
+
 
