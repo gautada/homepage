@@ -40,7 +40,7 @@ COPY entrypoint /etc/container/entrypoint
 # │ APPLICATION
 # ╰――――――――――――――――――――
 
-RUN /sbin/apk add --no-cache pnpm
+RUN /sbin/apk add --no-cache pnpm yamllint
 
 ARG IMAGE_VERSION="0.10.9"
 
