@@ -7,9 +7,13 @@ FROM docker.io/gautada/alpine:$ALPINE_VERSION as CONTAINER
 # ╭――――――――――――――――――――╮
 # │ METADATA           │
 # ╰――――――――――――――――――――╯
-LABEL source="https://github.com/gautada/homepage-container.git"
+LABEL org.opencontainers.image.title="homepage"
 LABEL maintainer="Adam Gautier <adam@gautier.org>"
-LABEL description="A container for a homepage server"
+LABEL org.opencontainers.image.description="A homepage dashboard container."
+LABEL org.opencontainers.image.url="https://hub.docker.com/r/gautada/homepage"
+LABEL org.opencontainers.image.source="https://github.com/gautada/homepage"
+LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
+LABEL org.opencontainers.image.license="Upstream"
 
 # ╭―
 # │ USER
