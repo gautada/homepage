@@ -60,7 +60,7 @@ jobs:
 
           arch="aarch64"
           run_with_prefix "${arch}" /usr/bin/podman build \
-           --arch "${arch} \
+           --arch "${arch}" \
            --build-arg-file .args \
            --file Containerfile \
            --no-cache \
@@ -68,7 +68,7 @@ jobs:
           pid1=$!
           arch="amd64"
           run_with_prefix "${arch}" /usr/bin/podman build \
-           --arch "${arch} \
+           --arch "${arch}" \
            --build-arg-file .args \
            --file Containerfile \
            --no-cache \
