@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [initiate]
     steps:
-      - name: "Build Container Image for aarch64 using Podman"
+      - name: "Build Container Image for amd64 using Podman"
         # There must be a line at the end of the .env file
         run: | 
           /usr/bin/podman build \
