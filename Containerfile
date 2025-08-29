@@ -46,7 +46,7 @@ COPY entrypoint /etc/container/entrypoint
 
 RUN /sbin/apk add --no-cache pnpm yamllint
 
-ARG IMAGE_VERSION="0.10.9"
+ARG IMAGE_VERSION="${IMAGE_VERSION:-'1.4.6'}"
 
 WORKDIR /
 RUN git config --global advice.detachedHead false \
