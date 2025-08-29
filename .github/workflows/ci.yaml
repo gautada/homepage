@@ -47,28 +47,32 @@ jobs:
             --username "${{ secrets.DOCKERIO_REGISTRY }}" \
              --password-stdin docker.io
 
-      - name: "Build Container Image for aarch64 using Podman"
+      - name: "Build Container Image for amd64 & aarch64 using Podman"
         # There must be a line at the end of the .env file
-        run: | 
-          /usr/bin/podman build \
-           --arch aarch64 \
-           --build-arg-file .args \
-           --file Containerfile \
-           --no-cache \
-           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-aarch64" \
-           . &
-          pid1=$!
+        run: |
+          run_with_prefix() {
+            prefix="$1"
+            shift
+            {
+              "$@" 2>&1 | sed "s/^/[${prefix}] /"
+            } &
+          }
 
-      - name: "Build Container Image for amd64 using Podman"
-        # There must be a line at the end of the .env file
-        run: | 
-          /usr/bin/podman build \
-           --arch amd64 \
+          arch="aarch64"
+          run_with_prefix "${arch}" /usr/bin/podman build \
+           --arch "${arch} \
            --build-arg-file .args \
            --file Containerfile \
            --no-cache \
-           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-amd64" \
-           . &
+           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-${arch}" . 
+          pid1=$!
+          arch="amd64"
+          run_with_prefix "${arch}" /usr/bin/podman build \
+           --arch "${arch} \
+           --build-arg-file .args \
+           --file Containerfile \
+           --no-cache \
+           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-${arch}" . 
           pid2=$!
 
           wait $pid1
