@@ -46,10 +46,10 @@ COPY entrypoint /etc/container/entrypoint
 
 RUN /sbin/apk add --no-cache pnpm yamllint
 
-ARG IMAGE_VERSION="0.10.9"
+ARG IMAGE_VERSION="${IMAGE_VERSION:-'1.4.6'}"
 
 WORKDIR /
-RUN git config --global advice.detachedHead false \
+RUN echo "${IMAGE_VERSION}" && git config --global advice.detachedHead false \
  && git clone --branch "v${IMAGE_VERSION}" https://github.com/gethomepage/homepage.git app
 WORKDIR /app
 RUN pnpm install \

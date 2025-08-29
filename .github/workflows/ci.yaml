@@ -9,15 +9,8 @@ on:
     branches:
       - main
 
-# env:
-#   IMAGE_NAME: "homepage"
-#   IMAGE_VERSION: "0.10.9"
-#   ALPINE_VERSION: "3.21.2"
-#   IMAGE_TAG_PROD: "latest"
-#   IMAGE_TAG_DEV: "dev"
-
 jobs:
-  build-integrate:
+  initiate:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
@@ -37,7 +30,7 @@ jobs:
         run: |
           while IFS='=' read -r key value; do
           echo "$key=$value" >> "$GITHUB_ENV"
-          done < .arg
+          done < .args
 
       - name: "Set up packages"
         # QEMU for aarch64 (using emulation)
@@ -52,27 +45,67 @@ jobs:
         run: |
           echo "${{ secrets.DOCKERIO_TOKEN }}" | /usr/bin/podman login \
             --username "${{ secrets.DOCKERIO_REGISTRY }}" \
-            --password-stdin docker.io
+             --password-stdin docker.io
 
-      - name: "Build Container Image for aarch64 using Podman"
+      - name: "Build Container Image for amd64 & aarch64 using Podman"
+        # There must be a line at the end of the .env file
         run: |
-          /usr/bin/podman build \
-           --arch aarch64 \
-           --build-arg "IMAGE_VERSION=${{ env.IMAGE_VERSION }}" \
-           --build-arg "ALPINE_VERSION=${{ env.ALPINE_VERSION }}" \
+          run_with_prefix() {
+            prefix="$1"
+            shift
+            {
+              "$@" 2>&1 | sed "s/^/[${prefix}] /"
+            } &
+          }
+
+          arch="aarch64"
+          run_with_prefix "${arch}" /usr/bin/podman build \
+           --arch "${arch}" \
+           --build-arg-file .args \
            --file Containerfile \
            --no-cache \
-           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}" \
-           .
+           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-${arch}" . 
+          pid1=$!
+          arch="amd64"
+          run_with_prefix "${arch}" /usr/bin/podman build \
+           --arch "${arch}" \
+           --build-arg-file .args \
+           --file Containerfile \
+           --no-cache \
+           --tag "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-${arch}" . 
+          pid2=$!
+
+          wait $pid1
+          wait $pid2
+
           /usr/bin/podman images
 
       - name: "Push `dev` image to registry"
         run: |
-          S_IMG="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}"
           P_IMG="docker.io/${{ secrets.DOCKERIO_REGISTRY }}"
+          S_IMG="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-amd64"
           IMG="$P_IMG/$S_IMG"
           /usr/bin/podman tag "$S_IMG" "$IMG"
           /usr/bin/podman push "$IMG"
+          S_IMG="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEV }}-aarch64"
+          IMG="$P_IMG/$S_IMG"
+          /usr/bin/podman tag "$S_IMG" "$IMG"
+          /usr/bin/podman push "$IMG"
+
+      - name: "Create and Push Multi-Arch Manifest"
+        run: |
+          P_IMG="docker.io/${{ secrets.DOCKERIO_REGISTRY }}"
+          IMG_NAME="${{ env.IMAGE_NAME }}"
+          TAG="${{ env.IMAGE_TAG_DEV }}"
+          # Create manifest list
+          /usr/bin/podman manifest create "$IMG_NAME:$TAG"
+          # Add individual architecture images to manifest
+          /usr/bin/podman manifest add "$IMG_NAME:$TAG" "$P_IMG/$IMG_NAME:$TAG-amd64"
+          /usr/bin/podman manifest add "$IMG_NAME:$TAG" "$P_IMG/$IMG_NAME:$TAG-aarch64"
+          /usr/bin/podman tag "$IMG_NAME:$TAG" "$P_IMG/$IMG_NAME:$TAG"
+          /usr/bin/podman images
+          # Push the manifest list
+          /usr/bin/podman manifest push "$P_IMG/$IMG_NAME:$TAG"
 
       - name: "Push `latest` & <IMAGE_VERSION> to registry"
         if: github.event_name == 'pull_request' && github.base_ref == 'main'
