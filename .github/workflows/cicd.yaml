@@ -1,5 +1,6 @@
 ---
 name: "Continuous Integration: Build and Publish Multi-Architecture Image"
+# This is the generic reusable template for building containers
 
 on:
   workflow_dispatch: {}
@@ -13,12 +14,7 @@ on:
 jobs:
   linter:
     uses: gautada/cicd/.github/workflows/ci-linter.yaml@main
-  docker:
-    uses: gautada/cicd/.github/workflows/ci-docker-clean.yaml@main
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
-      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-  arm64:
+  build-arm64:
     needs: linter
     uses: gautada/cicd/.github/workflows/ci-podman-arch.yaml@main
     with:
@@ -26,7 +22,7 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
       REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-  amd64:
+  build-amd64:
     needs: linter
     uses: gautada/cicd/.github/workflows/ci-podman-arch.yaml@main
     with:
@@ -34,11 +30,23 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
       REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-  dev:
-    needs: [arm64, amd64]
+  integrate:
+    needs: [build-arm64, build-amd64]
     uses: gautada/cicd/.github/workflows/ci-podman-dev.yaml@main
     with:
       architectures: '["arm64", "amd64"]'
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
+      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+  clean:
+    needs: [integrate]
+    uses: gautada/cicd/.github/workflows/ci-registry-clean.yaml@main
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
+      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+  release:
+    needs: [clean]
+    uses: gautada/cicd/.github/workflows/cd-tag-latest.yaml@main
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
       REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
