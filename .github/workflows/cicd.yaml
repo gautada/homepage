@@ -1,0 +1,44 @@
+---
+name: "Continuous Integration: Build and Publish Multi-Architecture Image"
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linter:
+    uses: gautada/cicd/.github/workflows/ci-linter.yaml@main
+  docker:
+    uses: gautada/cicd/.github/workflows/ci-docker-clean.yaml@main
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
+      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+  arm64:
+    needs: linter
+    uses: gautada/cicd/.github/workflows/ci-podman-arch.yaml@main
+    with:
+      architecture: "arm64"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
+      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+  amd64:
+    needs: linter
+    uses: gautada/cicd/.github/workflows/ci-podman-arch.yaml@main
+    with:
+      architecture: "amd64"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
+      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+  dev:
+    needs: [arm64, amd64]
+    uses: gautada/cicd/.github/workflows/ci-podman-dev.yaml@main
+    with:
+      architectures: '["arm64", "amd64"]'
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DOCKERIO_REGISTRY }}
+      REGISTRY_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
