@@ -15,13 +15,15 @@ LABEL org.opencontainers.image.source="https://github.com/gautada/homepage"
 LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
 LABEL org.opencontainers.image.license="Upstream"
 
-# ╭―
-# │ USER
-# ╰――――――――――――――――――――
+# ╭――――――――――――――――――――╮
+# │ USER               │
+# ╰――――――――――――――――――――╯
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 ARG USER=homepage
 RUN /usr/sbin/usermod -l $USER alpine \
  && /usr/sbin/usermod -d /home/$USER -m $USER \
  && /usr/sbin/groupmod -n $USER alpine \
+# hadolint ignore=DL4006
  && /bin/echo "$USER:$USER" | /usr/sbin/chpasswd
 
 # ╭―
