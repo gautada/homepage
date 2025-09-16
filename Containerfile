@@ -18,7 +18,6 @@ LABEL org.opencontainers.image.license="Upstream"
 # ╭――――――――――――――――――――╮
 # │ USER               │
 # ╰――――――――――――――――――――╯
-# SHELL ["/bin/sh", "-o", "pipefail", "-c"]
 ARG USER=homepage
 RUN /usr/sbin/usermod -l $USER alpine \
  && /usr/sbin/usermod -d /home/$USER -m $USER \
