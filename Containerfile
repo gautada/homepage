@@ -1,13 +1,13 @@
-ARG ALPINE_VERSION=latest
+ARG ALPINE_VERSION=3.22
+ARG IMAGE_NAME=homepage
+ARG IMAGE_VERSION=1.4.6
 
-# │ STAGE: CONTAINER
-# ╰――――――――――――――――――――――――――――――――――――――――――――――――――――――
 FROM docker.io/gautada/alpine:$ALPINE_VERSION as CONTAINER
 
 # ╭――――――――――――――――――――╮
 # │ METADATA           │
 # ╰――――――――――――――――――――╯
-LABEL org.opencontainers.image.title="homepage"
+LABEL org.opencontainers.image.title="${IMAGE_NAME}"
 LABEL maintainer="Adam Gautier <adam@gautier.org>"
 LABEL org.opencontainers.image.description="A homepage dashboard container."
 LABEL org.opencontainers.image.url="https://hub.docker.com/r/gautada/homepage"
@@ -23,32 +23,27 @@ ARG USER=homepage
 RUN /usr/sbin/usermod -l $USER alpine \
  && /usr/sbin/usermod -d /home/$USER -m $USER \
  && /usr/sbin/groupmod -n $USER alpine \
-# hadolint ignore=DL4006
  && /bin/echo "$USER:$USER" | /usr/sbin/chpasswd
 
-# ╭―
-# │ PRIVILEGES
-# ╰――――――――――――――――――――
+# ╭――――――――――――――――――――╮
+# │ PRIVILEGE          │
+# ╰――――――――――――――――――――╯
 # COPY privileges /etc/container/privileges
 
-# ╭―
-# │ BACKUP
-# ╰――――――――――――――――――――
+# ╭――――――――――――――――――――╮
+# │ BACKUP             │
+# ╰――――――――――――――――――――╯
 # COPY backup /etc/container/backup
 
-
-# ╭―
-# │ ENTRYPOINT
-# ╰――――――――――――――――――――
+# ╭――――――――――――――――――――╮
+# │ ENTRYPOINT         │
+# ╰――――――――――――――――――――╯
 COPY entrypoint /etc/container/entrypoint
 
-# ╭―
-# │ APPLICATION
-# ╰――――――――――――――――――――
-
+# ╭――――――――――――――――――――╮
+# │ APPLICATION        │
+# ╰――――――――――――――――――――╯
 RUN /sbin/apk add --no-cache pnpm yamllint
-
-ARG IMAGE_VERSION="${IMAGE_VERSION:-'1.4.6'}"
 
 WORKDIR /
 RUN echo "${IMAGE_VERSION}" && git config --global advice.detachedHead false \
@@ -76,25 +71,16 @@ RUN pnpm install \
  && ln -fsv /mnt/volumes/configmaps/custom.js /etc/container/configmaps/custom.js \
  && ln -fsv /mnt/volumes/container/images /app/public/images
 
-# RUN mkdir -p /app/public/images \
-#  && cp images/6.png /app/public/images/6.png
-# COPY images /app/public/images
-
-# RUN chown -R $USER:$USER /app
-
-# ╭―
-# │ CONFIGURATION
-# ╰――――――――――――――――――――
+# ╭――――――――――――――――――――╮
+# │ CONFIGURATION      │
+# ╰――――――――――――――――――――╯
 RUN chown -R $USER:$USER /app /home/$USER
-
 USER $USER
 VOLUME /mnt/volumes/backup
 VOLUME /mnt/volumes/configmaps
 VOLUME /mnt/volumes/container
 VOLUME /mnt/volumes/secrets
 VOLUME /mnt/volumes/source
-
-
 WORKDIR /app
 
 
