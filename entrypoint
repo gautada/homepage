@@ -7,6 +7,6 @@
 #             [gist](https://gist.github.com/gautada/f185700af585a50b3884ad10c2b02f98)
 
 container_entrypoint() {
- pnpm start # /app --hostname 0.0.0.0 --port 8080
+ pnpm start /app --hostname 0.0.0.0 --port 8080
  # exec "$@"
 }
