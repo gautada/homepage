@@ -9,4 +9,7 @@
 container_entrypoint() {
  pnpm start /app --hostname 0.0.0.0 --port 8080
  # exec "$@"
+ # pnpm start # /app --hostname 0.0.0.0 --port 8080
+ # node server.js
+ #  tail -f /dev/null
 }
