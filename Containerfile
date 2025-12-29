@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ARG ALPINE_VERSION=3.22
 FROM docker.io/gautada/alpine:$ALPINE_VERSION as CONTAINER
 
