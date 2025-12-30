@@ -43,6 +43,7 @@ RUN /usr/sbin/usermod -l $USER alpine \
 # ╭――――――――――――――――――――╮
 # │ CONTAINER          │
 # ╰――――――――――――――――――――╯
+COPY homepage.s6 /etc/services.d/homepage/run
 RUN /sbin/apk add --no-cache pnpm yamllint
 WORKDIR /
 RUN echo "${IMAGE_VERSION}" && git config --global advice.detachedHead false \
