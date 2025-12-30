@@ -8,7 +8,7 @@ ARG IMAGE_VERSION=1.4.6
 # │ METADATA           │
 # ╰――――――――――――――――――――╯
 LABEL org.opencontainers.image.title="${IMAGE_NAME}"
-LABEL maintainer="Adam Gautier <adam@gautier.org>"
+# LABEL maintainer="Adam Gautier <adam@gautier.org>"
 LABEL org.opencontainers.image.description="A homepage dashboard container."
 LABEL org.opencontainers.image.url="https://hub.docker.com/r/gautada/homepage"
 LABEL org.opencontainers.image.source="https://github.com/gautada/homepage"
@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.license="Upstream"
 # ╭――――――――――――――――――――╮
 # │ USER               │
 # ╰――――――――――――――――――――╯
-SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+# SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 ARG USER=homepage
 RUN /usr/sbin/usermod -l $USER alpine \
  && /usr/sbin/usermod -d /home/$USER -m $USER \
@@ -38,13 +38,13 @@ RUN /usr/sbin/usermod -l $USER alpine \
 # ╭――――――――――――――――――――╮
 # │ ENTRYPOINT         │
 # ╰――――――――――――――――――――╯
-COPY entrypoint /etc/container/entrypoint
+# COPY entrypoint /etc/container/entrypoint
 
 # ╭――――――――――――――――――――╮
-# │ APPLICATION        │
+# │ CONTAINER          │
 # ╰――――――――――――――――――――╯
+COPY homepage.s6 /etc/services.d/homepage/run
 RUN /sbin/apk add --no-cache pnpm yamllint
-
 WORKDIR /
 RUN echo "${IMAGE_VERSION}" && git config --global advice.detachedHead false \
  && git clone --branch "v${IMAGE_VERSION}" https://github.com/gethomepage/homepage.git app
@@ -70,20 +70,5 @@ RUN pnpm install \
  && ln -fsv /mnt/volumes/configmaps/custom.css /etc/container/configmaps/custom.css \
  && ln -fsv /mnt/volumes/configmaps/custom.js /etc/container/configmaps/custom.js \
  && ln -fsv /mnt/volumes/container/images /app/public/images
-
-# ╭――――――――――――――――――――╮
-# │ CONFIGURATION      │
-# ╰――――――――――――――――――――╯
 RUN chown -R $USER:$USER /app /home/$USER
-USER $USER
-VOLUME /mnt/volumes/backup
-VOLUME /mnt/volumes/configmaps
-VOLUME /mnt/volumes/container
-VOLUME /mnt/volumes/secrets
-VOLUME /mnt/volumes/source
 WORKDIR /app
-
-
-
-
-
