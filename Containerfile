@@ -2,7 +2,6 @@ ARG CONTAINER_VERSION=13.3
 FROM docker.io/gautada/debian:${CONTAINER_VERSION} AS container
 
 ARG IMAGE_NAME=homepage
-ARG IMAGE_VERSION=1.10.1
 
 # ╭――――――――――――――――――――╮
 # │ METADATA           │
@@ -11,7 +10,6 @@ LABEL org.opencontainers.image.title="${IMAGE_NAME}"
 LABEL org.opencontainers.image.description="A homepage dashboard container."
 LABEL org.opencontainers.image.url="https://hub.docker.com/r/gautada/homepage"
 LABEL org.opencontainers.image.source="https://github.com/gautada/homepage"
-LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
 LABEL org.opencontainers.image.license="Upstream"
 
 # ╭――――――――――――――――――――╮
@@ -49,7 +47,14 @@ RUN /usr/sbin/usermod -l $USER debian \
 # then wire up all configmap symlinks so runtime config can be
 # injected via volume mounts at /mnt/volumes/configmaps/.
 WORKDIR /app
-RUN git config --global advice.detachedHead false \
+RUN IMAGE_VERSION=$(curl -sL "https://api.github.com/repos/gethomepage/homepage/releases/latest" \
+    | jq -r '.tag_name' \
+    | sed 's/^v//' \
+    | tr -d '[:space:]') \
+ && { [ -n "$IMAGE_VERSION" ] && [ "$IMAGE_VERSION" != "null" ] \
+      || { echo "ERROR: failed to resolve latest homepage version from GitHub API" >&2; exit 1; }; } \
+ && echo "Building with homepage ${IMAGE_VERSION}" \
+ && git config --global advice.detachedHead false \
  && git clone --branch "v${IMAGE_VERSION}" \
               https://github.com/gethomepage/homepage.git . \
  && pnpm install \
