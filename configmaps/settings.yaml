@@ -1,0 +1,5 @@
+# Homepage settings — minimal default configuration.
+# This file is provided as a default so the container can start without
+# a mounted k8s configmap. In production, /mnt/volumes/configmaps/ is
+# supplied by a k8s volume mount and these defaults are replaced.
+title: Homepage

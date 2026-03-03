@@ -78,8 +78,17 @@ RUN IMAGE_VERSION=$(curl -sL "https://api.github.com/repos/gethomepage/homepage/
  && ln -fsv /mnt/volumes/configmaps/widgets.yaml       /etc/container/configmaps/widgets.yaml \
  && ln -fsv /mnt/volumes/configmaps/custom.css         /etc/container/configmaps/custom.css \
  && ln -fsv /mnt/volumes/configmaps/custom.js          /etc/container/configmaps/custom.js \
- && ln -fsv /mnt/volumes/container/images              /app/public/images
+ && ln -fsv /mnt/volumes/container/images              /app/public/images \
+ && mkdir -p /mnt/volumes/configmaps
 RUN chown -R $USER:$USER /app /home/$USER
+
+# ╭――――――――――――――――――――╮
+# │ CONFIG             │
+# ╰――――――――――――――――――――╯
+# Default configmap files. These are the minimum configs required to start
+# the homepage server. In production, /mnt/volumes/configmaps/ is supplied
+# by a k8s volume mount which replaces these defaults with live configs.
+COPY configmaps/ /mnt/volumes/configmaps/
 
 # ╭――――――――――――――――――――╮
 # │ VERSION            │
