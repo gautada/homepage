@@ -1,0 +1,2 @@
+# Homepage docker integration — disabled by default.
+# Override via k8s configmap in production.
