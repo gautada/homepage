@@ -21,6 +21,7 @@ LABEL org.opencontainers.image.license="Upstream"
 # - curl: already in base; used by NodeSource setup + latest.sh
 # - nodejs (22.x): runtime and build tool for homepage (Next.js app)
 # - corepack: bundled with Node 22; provides pnpm without a separate install
+# hadolint ignore=DL3008
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git jq \
  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
