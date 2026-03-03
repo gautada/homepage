@@ -1,0 +1,3 @@
+# Homepage kubernetes integration — disabled by default.
+# Override via k8s configmap in production.
+mode: disabled
