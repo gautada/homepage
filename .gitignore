@@ -31,3 +31,4 @@ manifest/
 .shellcheckrc
 .sqlfluff
 .yamllint.yaml
+pyproject.toml
