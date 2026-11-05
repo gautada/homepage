@@ -1,5 +1,5 @@
-ARG CONTAINER_VERSION=13.3
-FROM docker.io/gautada/debian:${CONTAINER_VERSION} AS container
+ARG CONTAINER_VERSION=13.6
+FROM docker.io/gautada/node:${CONTAINER_VERSION} AS container
 
 ARG IMAGE_NAME=homepage
 
@@ -15,30 +15,25 @@ LABEL org.opencontainers.image.license="Upstream"
 # ╭――――――――――――――――――――╮
 # │ PACKAGES           │
 # ╰――――――――――――――――――――╯
-# Install build dependencies and Node.js 22 via NodeSource.
+# The gautada/node base image provides Node.js and corepack (pnpm).
+# Only git and jq are needed beyond what the base supplies.
 # - git: required to clone the homepage source at build time
 # - jq: required at runtime by version.sh and latest.sh health scripts
-# - curl: already in base; used by NodeSource setup + latest.sh
-# - nodejs (22.x): runtime and build tool for homepage (Next.js app)
-# - corepack: bundled with Node 22; provides pnpm without a separate install
 # hadolint ignore=DL3008
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git jq \
- && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
- && apt-get install -y --no-install-recommends nodejs \
- && corepack enable \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # ╭――――――――――――――――――――╮
 # │ USER               │
 # ╰――――――――――――――――――――╯
-# Rename the base debian user to homepage.
+# Rename the base node user to homepage.
 # Follows the same pattern as other gautada containers.
 ARG USER=homepage
-RUN /usr/sbin/usermod -l $USER debian \
+RUN /usr/sbin/usermod -l $USER ryan \
  && /usr/sbin/usermod -d /home/$USER -m $USER \
- && /usr/sbin/groupmod -n $USER debian \
+ && /usr/sbin/groupmod -n $USER ryan \
  && /bin/echo "$USER:$USER" | /usr/sbin/chpasswd
 
 # ╭――――――――――――――――――――╮
