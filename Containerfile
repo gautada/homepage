@@ -19,8 +19,9 @@ LABEL org.opencontainers.image.license="Upstream"
 # - git: required to clone the homepage source at build time
 # - jq: required at runtime by version.sh and latest.sh health scripts
 # Node.js, npm, and corepack are provided by gautada/node.
-# hadolint ignore=DL3008
+# hadolint ignore=DL3008,DL3009
 RUN apt-get update \
+ && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends git jq \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
