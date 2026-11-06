@@ -8,4 +8,4 @@ YAML files or through docker label discovery.
 [Services](https://gethomepage.dev/configs/services/)
 [GitHub](https://github.com/gethomepage/homepage)
 
-Flipflop 1
+Flipflop 2
