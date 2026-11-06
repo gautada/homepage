@@ -1,5 +1,5 @@
-ARG CONTAINER_VERSION=13.3
-FROM docker.io/gautada/debian:${CONTAINER_VERSION} AS container
+ARG NODE_VERSION=24.20.0
+FROM docker.io/gautada/node:${NODE_VERSION} AS container
 
 ARG IMAGE_NAME=homepage
 
@@ -15,30 +15,26 @@ LABEL org.opencontainers.image.license="Upstream"
 # ╭――――――――――――――――――――╮
 # │ PACKAGES           │
 # ╰――――――――――――――――――――╯
-# Install build dependencies and Node.js 22 via NodeSource.
+# Install build/runtime dependencies not provided by the node base image.
 # - git: required to clone the homepage source at build time
 # - jq: required at runtime by version.sh and latest.sh health scripts
-# - curl: already in base; used by NodeSource setup + latest.sh
-# - nodejs (22.x): runtime and build tool for homepage (Next.js app)
-# - corepack: bundled with Node 22; provides pnpm without a separate install
-# hadolint ignore=DL3008
+# Node.js, npm, and corepack are provided by gautada/node.
+# hadolint ignore=DL3008,DL3009
 RUN apt-get update \
+ && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends git jq \
- && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
- && apt-get install -y --no-install-recommends nodejs \
- && corepack enable \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # ╭――――――――――――――――――――╮
 # │ USER               │
 # ╰――――――――――――――――――――╯
-# Rename the base debian user to homepage.
+# Rename the node base user (ryan) to homepage.
 # Follows the same pattern as other gautada containers.
 ARG USER=homepage
-RUN /usr/sbin/usermod -l $USER debian \
+RUN /usr/sbin/usermod -l $USER ryan \
  && /usr/sbin/usermod -d /home/$USER -m $USER \
- && /usr/sbin/groupmod -n $USER debian \
+ && /usr/sbin/groupmod -n $USER ryan \
  && /bin/echo "$USER:$USER" | /usr/sbin/chpasswd
 
 # ╭――――――――――――――――――――╮
@@ -112,11 +108,11 @@ RUN chmod +x /usr/bin/container-latest
 # ╰――――――――――――――――――――╯
 # appversion-check: verifies running version matches latest GitHub release.
 # homepage-running: verifies homepage is responding on port 8080.
-# Both drop into /etc/container/health.d/ (run by container-health from base).
-COPY appversion-check.sh /etc/container/health.d/appversion-check
-RUN chmod +x /etc/container/health.d/appversion-check
-COPY homepage-running.sh /etc/container/health.d/homepage-running
-RUN chmod +x /etc/container/health.d/homepage-running
+# Both drop into /etc/health.d/ (run by container-health from base).
+COPY appversion-check.sh /etc/health.d/appversion-check
+RUN chmod +x /etc/health.d/appversion-check
+COPY homepage-running.sh /etc/health.d/homepage-running
+RUN chmod +x /etc/health.d/homepage-running
 
 # ╭――――――――――――――――――――╮
 # │ ENTRYPOINT         │
