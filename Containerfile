@@ -109,8 +109,8 @@ RUN chmod +x /usr/bin/container-latest
 # appversion-check: verifies running version matches latest GitHub release.
 # homepage-running: verifies homepage is responding on port 8080.
 # Both drop into /etc/health.d/ (run by container-health from base).
-COPY appversion-check.sh /etc/health.d/appversion-check
-RUN chmod +x /etc/health.d/appversion-check
+# COPY appversion-check.sh /etc/health.d/appversion-check
+# RUN chmod +x /etc/health.d/appversion-check
 COPY homepage-running.sh /etc/health.d/homepage-running
 RUN chmod +x /etc/health.d/homepage-running
 
