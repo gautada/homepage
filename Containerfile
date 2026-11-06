@@ -91,8 +91,8 @@ COPY configmaps/ /mnt/volumes/configmaps/
 # ╰――――――――――――――――――――╯
 # Provides /usr/bin/container-version — returns the homepage app version
 # by reading package.json. Used by CICD and appversion-check.sh.
-COPY version.sh /usr/bin/container-version
-RUN chmod +x /usr/bin/container-version
+# COPY version.sh /usr/bin/container-version
+# RUN chmod +x /usr/bin/container-version
 
 # ╭――――――――――――――――――――╮
 # │ LATEST             │
